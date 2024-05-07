@@ -6,7 +6,6 @@ struct Workspace {
     number: i32,
     urgent: bool,
     focused: bool,
-    display_focused: bool,
 }
 
 ///	builds the i3 workspace widget and prints it
@@ -25,11 +24,11 @@ pub fn build_widget(connection: &mut I3Connection, display_name: &str) {
     let mut workspaces: Vec<Workspace> = workspaces_resposne
         .workspaces
         .iter()
+        .filter(|ws| ws.output == display_name)
         .map(|ws| Workspace {
             number: ws.num,
             urgent: ws.urgent,
             focused: ws.focused,
-            display_focused: ws.output == display_name,
         })
         .collect();
 
@@ -44,12 +43,6 @@ pub fn build_widget(connection: &mut I3Connection, display_name: &str) {
         }
         if ws.urgent {
             classes += "urgent ";
-        }
-
-        if ws.display_focused {
-            classes += "focused_display"
-        } else {
-            classes += "unfocused_display"
         }
         //	build workspace number
         let ws_num = ws.number.to_string();
